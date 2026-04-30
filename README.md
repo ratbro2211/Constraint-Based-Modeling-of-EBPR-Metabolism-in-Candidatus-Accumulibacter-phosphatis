@@ -144,4 +144,26 @@ This model provides insights into:
 
 ---
 
-## 📁 Repository Structure
+## 🚀 Future Work
+
+- Incorporate dynamic FBA (time-dependent modeling)  
+- Add multiple carbon sources (propionate, glucose)  
+- Introduce oxygen gradients  
+- Include regulatory constraints (gene expression)  
+- Expand model to include denitrification pathways  
+- Validate against real wastewater treatment data  
+
+---
+
+## 📚 Reference
+Project based on EBPR metabolic modeling framework and constraint-based analysis concepts. :contentReference[oaicite:0]{index=0}
+
+---
+
+## 👨‍💻 Author
+[Your Name]
+
+---
+
+## 📌 Notes
+This is a simplified model and serves as a conceptual framework for understanding EBPR metabolic switching under controlled conditions.
