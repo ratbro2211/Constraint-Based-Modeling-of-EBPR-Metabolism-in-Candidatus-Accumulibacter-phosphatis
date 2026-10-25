@@ -47,7 +47,6 @@ plt.rcParams.update(
         "axes.linewidth": 0.7,
         "savefig.dpi": 300,
         "pdf.fonttype": 42,
-        "svg.fonttype": "none",
     }
 )
 
