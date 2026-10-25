@@ -1,0 +1,23 @@
+reaction_id,reaction,flux
+EX_ac_e,Acetate exchange,-4.9
+AC_TRANSPORT,Acetate transport,4.9
+EX_o2_e,Oxygen exchange,0
+O2_TRANSPORT,Oxygen transport,0
+EX_pi_e,Phosphate exchange,5.1
+PI_TRANSPORT,Phosphate uptake,0
+PI_EXPORT,Phosphate release,5.1
+EX_co2_e,Carbon dioxide exchange,0
+ATPM,ATP maintenance demand,0.1
+AC_ACT,Acetate activation (one ATP per carbon unit),4.9
+GLYCOGEN_DEG,Lumped glycogen-to-carbon conversion (no ATP credit),0.5
+PHA_SYN,PHA synthesis,5.4
+PHA_ACCUM,PHA accumulation sink,5.4
+PHA_DEG,PHA degradation,0
+PP_DEG,Polyphosphate degradation (one ATP per unit),5
+PP_SYN,Polyphosphate synthesis (one ATP per unit),0
+PP_ACCUM,Polyphosphate accumulation sink,0
+TCA,Lumped TCA oxidation,0
+OXPHOS,Lumped oxidative phosphorylation (three ATP per carbon unit),0
+POLYP_RESERVE,Finite polyphosphate reserve supply,5
+GLYCOGEN_RESERVE,Finite glycogen reserve supply,0.5
+PHA_RESERVE,Finite stored-PHA supply,0
