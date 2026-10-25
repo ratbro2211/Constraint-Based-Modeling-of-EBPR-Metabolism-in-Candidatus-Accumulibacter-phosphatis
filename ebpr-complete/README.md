@@ -58,16 +58,18 @@ python scripts/build_model.py
 python scripts/run_anaerobic.py
 python scripts/run_aerobic.py
 python scripts/sensitivity_analysis.py
+python scripts/generate_publication_outputs.py
 python -m unittest discover -s tests -v
 ```
 
 The tested runtime is Python 3.13.11 with the dependency versions pinned in
 `requirements.txt`.
 
-The phase scripts write reaction flux tables to `artifacts/`. The sensitivity
-script writes `artifacts/sensitivity_analysis.csv` and
-`artifacts/sensitivity_analysis.png`. The build script serializes the default
-anaerobic model to `models/ebpr_model.json`.
+The phase scripts write detailed reaction-flux tables to `artifacts/`. The
+publication-output script writes summary tables and interpretation notes to
+`results/`, and three figures as 300-dpi PNG plus vector PDF to `figures/`.
+The build script serializes the default anaerobic model to
+`models/ebpr_model.json`.
 
 The unrelated OpenSMOG protein-folding notebook has been separated into its
 [own tutorial repository](https://github.com/ratbro2211/opensmog-protein-folding-tutorial);
@@ -116,8 +118,20 @@ disagreement is a model limitation to resolve with literature-based glycogen
 stoichiometry, not evidence that glycogen has a particular effect in real
 EBPR.
 
-The detailed fluxes and the plotted sensitivity sweep are checked in under
-`artifacts/`.
+The detailed reaction fluxes remain in `artifacts/`; publication-ready
+summaries, figure captions, and the growth-curve status are in `results/`.
+Figures are in `figures/figure_01_ebpr_phase_cycle.*`,
+`figures/figure_02_baseline_fluxes.*`, and
+`figures/figure_03_sensitivity_analysis.*`.
+
+### Growth curve
+
+There is no biomass-versus-time growth curve in this project. The current
+network performs two independent steady-state FBA optimizations; it has no
+biomass reaction, time integration, or experimental biomass time series. The
+model's flux values cannot be converted into a measured growth curve. See
+`results/growth_curve_status.md` for the specific data needed to add one
+without inventing experimental results.
 
 ## Important limitations
 
