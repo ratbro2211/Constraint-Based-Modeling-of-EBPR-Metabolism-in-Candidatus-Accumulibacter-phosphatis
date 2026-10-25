@@ -21,9 +21,10 @@ published stoichiometric coefficients; see [References](#references).
 ## What the model represents
 
 The model is built from aggregate reactions for acetate activation, PHA storage
-and degradation, polyphosphate storage and degradation, glycogen reserve
-breakdown, a lumped TCA oxidation step, oxidative phosphorylation, and ATP
-maintenance. It uses separate steady-state optimizations for the two phases:
+and degradation, polyphosphate storage and degradation, glycogen mobilization,
+lumped glycolysis and pyruvate oxidation, TCA oxidation, oxidative
+phosphorylation, and ATP maintenance. It uses separate steady-state
+optimizations for the two phases:
 
 - **Anaerobic:** oxygen uptake is blocked; acetate and finite polyphosphate and
   glycogen reserve supplies are available. The objective is PHA accumulation.
@@ -36,9 +37,10 @@ The reserve bounds are flux caps used to represent finite availability in each
 separate steady-state run. They do not simulate a time-dependent transfer of
 storage pools between phases.
 
-In this abstraction, glycogen contributes a bounded carbon unit but no ATP
-credit; acetate activation and reserve reactions are deliberately simplified.
-This makes the energy/constraint tradeoffs visible without claiming a detailed
+Glycogen-derived carbon passes through glucose-equivalent and pyruvate
+intermediates. Glycolytic ATP and redox production are omitted; acetate
+activation and reserve reactions are also deliberately simplified. These
+choices make energy/constraint tradeoffs visible without claiming a detailed
 glycogen pathway.
 
 ## Run it
@@ -53,6 +55,9 @@ python scripts/run_aerobic.py
 python scripts/sensitivity_analysis.py
 python -m unittest discover -s tests -v
 ```
+
+The tested runtime is Python 3.13.11 with the dependency versions pinned in
+`requirements.txt`.
 
 The phase scripts write reaction flux tables to `artifacts/`. The sensitivity
 script writes `artifacts/sensitivity_analysis.csv` and
@@ -99,6 +104,13 @@ The one-at-a-time sweeps show the model's expected constraint response:
   accumulation from 5.5 to 4.5 and aerobic polyphosphate accumulation from 20
   to 19.
 
+The starter README described glycogen as having minimal effect. This
+implementation does not reproduce that claim: the simplified carbon-only
+glycogen path produces a visible increase in PHA over the sweep above. That
+disagreement is a model limitation to resolve with literature-based glycogen
+stoichiometry, not evidence that glycogen has a particular effect in real
+EBPR.
+
 The detailed fluxes and the plotted sensitivity sweep are checked in under
 `artifacts/`.
 
@@ -119,6 +131,13 @@ The detailed fluxes and the plotted sensitivity sweep are checked in under
 For research use, replace the aggregate reactions and parameter defaults with
 stoichiometries and bounds from a cited EBPR/Accumulibacter reconstruction,
 document the source, and validate predictions against appropriate data.
+
+## Future extensions
+
+These remain outside the current teaching-model scope: dynamic FBA linking
+storage pools across phases, additional carbon sources, oxygen gradients,
+gene-expression/regulatory constraints, denitrification, and calibration or
+validation against wastewater-treatment data.
 
 ## References
 
