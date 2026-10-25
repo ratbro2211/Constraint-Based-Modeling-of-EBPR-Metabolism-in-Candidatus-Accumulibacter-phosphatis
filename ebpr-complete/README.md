@@ -59,6 +59,7 @@ python scripts/run_anaerobic.py
 python scripts/run_aerobic.py
 python scripts/sensitivity_analysis.py
 python scripts/generate_publication_outputs.py
+python scripts/create_review_report.py
 python -m unittest discover -s tests -v
 ```
 
@@ -67,9 +68,9 @@ The tested runtime is Python 3.13.11 with the dependency versions pinned in
 
 The phase scripts write detailed reaction-flux tables to `artifacts/`. The
 publication-output script writes summary tables and interpretation notes to
-`results/`, and four figures as 300-dpi PNG plus vector PDF to `figures/`. Figure
-4 uses an independently published, attributed qPCR time series; see
-`results/data_provenance.md`.
+`results/`, and three model-output figures as 300-dpi PNG plus vector PDF to
+`figures/`. Run `create_review_report.py` after generating the outputs to assemble
+the model results and figures into `results/EBPR_review_report.pdf`.
 The build script serializes the default anaerobic model to
 `models/ebpr_model.json`.
 
@@ -121,27 +122,16 @@ stoichiometry, not evidence that glycogen has a particular effect in real
 EBPR.
 
 The detailed reaction fluxes remain in `artifacts/`; publication-ready
-summaries, figure captions, data provenance, and growth-curve status are in
-`results/`.
+summaries, figure captions, and future-work notes are in `results/`.
 Figures are in `figures/figure_01_ebpr_phase_cycle.*`,
 `figures/figure_02_baseline_fluxes.*`, and
-`figures/figure_03_sensitivity_analysis.*`, plus the measured
-`figures/figure_04_measured_population_dynamics.*`.
+`figures/figure_03_sensitivity_analysis.*`.
 
-### Measured population time series
-
-Figure 4 plots measured Accumulibacter `ppk1` qPCR abundance (copies per ng DNA)
-for clades IA and IIA over time in a separate EBPR enrichment reactor. The
-source file is included under `data/external/` with CC BY 4.0 attribution. This
-is a population-abundance trajectory, **not** a biomass growth curve: it is not
-OD600, VSS/TSS, or a cell count, and the time series is not an axenic culture
-growth experiment. The dashed line marks the reactor reseeding event reported
-by the source study.
-
-The FBA model still has no biomass reaction or time integration; its flux
-outputs cannot generate a biomass growth curve. The external qPCR series is
-not used to calibrate or validate the teaching model. See
-`results/growth_curve_status.md` and `results/data_provenance.md`.
+This is a model-only project: no wet-lab experiments or experimental
+measurements were conducted. Because the current model solves two independent
+steady states and has no biomass reaction or time integration, it does not
+produce a growth curve. Potential experimental validation is described only as
+future work in `results/future_work.md`.
 
 ## Important limitations
 
@@ -190,12 +180,6 @@ model's reaction coefficients and parameter values are not taken from them.
    process.” *Biotechnology and Bioengineering*. 1994;44(7):837–848.
    [PubMed](https://pubmed.ncbi.nlm.nih.gov/18618851/)
    · [DOI](https://doi.org/10.1002/bit.260440709)
-3. McDaniel, E. A., et al. (2022). *Signatures of Microbial Diversity at
-   Multiple Scales of Resolution within Engineered Enrichment Communities*.
-   bioRxiv preprint. [DOI](https://doi.org/10.1101/2022.10.01.510452)
-4. McDaniel, E. (2022). *Accumulibacter ppk1 qPCR Time-Series Raw Averages*.
-   Figshare dataset, CC BY 4.0.
-   [DOI](https://doi.org/10.6084/m9.figshare.21151624.v1)
 
 ## Author
 

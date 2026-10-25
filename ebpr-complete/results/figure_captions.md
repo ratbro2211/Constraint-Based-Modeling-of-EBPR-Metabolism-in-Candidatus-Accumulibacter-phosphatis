@@ -10,9 +10,3 @@
    parameter groups. Infeasible boundary cases are noted, not plotted as zero.
    No uncertainty intervals are available because these are deterministic
    teaching-model solves with arbitrary bounds.
-4. **Measured Accumulibacter population dynamics.** Arithmetic mean ppk1 qPCR
-   copies per ng DNA for clades IA and IIA, with whiskers showing the minimum
-   and maximum of 2–3 technical qPCR wells per date. The y-axis is logarithmic.
-   The dashed line marks the R1 reseeding event on 28 January 2010 described by
-   the source study. This independent reactor time series is not a biomass
-   growth curve or validation of the FBA model. See `data_provenance.md`.

@@ -7,17 +7,13 @@ experimental growth curves or calibrated wastewater-treatment predictions.
 from __future__ import annotations
 
 import csv
-from collections import defaultdict
-from datetime import date, datetime
 from pathlib import Path
-import statistics
 from typing import Any
 
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 from ebpr_model import ROOT, build_model, optimize_phase
@@ -25,8 +21,6 @@ from sensitivity_analysis import run_sweeps
 
 RESULTS_DIR = ROOT / "results"
 FIGURES_DIR = ROOT / "figures"
-QPCR_DATA = ROOT / "data" / "external" / "r1_accumulibacter_ppk1_qpcr_raw_averages.csv"
-REACTOR_RESEED_DATE = date(2010, 1, 28)
 
 COLORS = {
     "anaerobic": "#1F74AD",
@@ -386,139 +380,12 @@ def make_sensitivity_figure(rows: list[dict[str, Any]]) -> tuple[Path, Path]:
     return _save_figure(fig, "figure_03_sensitivity_analysis")
 
 
-def collect_qpcr_summary() -> list[dict[str, Any]]:
-    """Aggregate source qPCR wells by date without converting units."""
-    if not QPCR_DATA.is_file():
-        raise FileNotFoundError(f"Required attributed qPCR data not found: {QPCR_DATA}")
-
-    ia_values: dict[date, list[float]] = defaultdict(list)
-    iia_values: dict[date, list[float]] = defaultdict(list)
-    with QPCR_DATA.open(newline="", encoding="utf-8-sig") as handle:
-        reader = csv.reader(handle)
-        header = next(reader, [])
-        if (
-            len(header) < 8
-            or "Copies/ng DNA" not in header[4]
-            or "Copies/ng DNA" not in header[7]
-        ):
-            raise ValueError("Unexpected qPCR source columns; verify source data and units.")
-        for line_number, row in enumerate(reader, start=2):
-            if len(row) < 8:
-                raise ValueError(f"Malformed qPCR row at line {line_number}.")
-            ia_date = datetime.strptime(row[2], "%m/%d/%y").date()
-            iia_date = datetime.strptime(row[5], "%m/%d/%y").date()
-            ia_values[ia_date].append(float(row[4]))
-            iia_values[iia_date].append(float(row[7]))
-
-    if set(ia_values) != set(iia_values):
-        raise ValueError("Clade IA and IIA qPCR sample dates do not match.")
-
-    rows: list[dict[str, Any]] = []
-    for sample_date in sorted(ia_values):
-        row: dict[str, Any] = {
-            "date": sample_date.isoformat(),
-            "days_from_2010_01_28_reseed": (sample_date - REACTOR_RESEED_DATE).days,
-        }
-        for clade, values in (
-            ("clade_IA", ia_values[sample_date]),
-            ("clade_IIA", iia_values[sample_date]),
-        ):
-            row[f"{clade}_mean_copies_per_ng_DNA"] = _fmt(statistics.mean(values))
-            row[f"{clade}_sd_copies_per_ng_DNA"] = _fmt(
-                statistics.stdev(values) if len(values) > 1 else 0.0
-            )
-            row[f"{clade}_min_copies_per_ng_DNA"] = _fmt(min(values))
-            row[f"{clade}_max_copies_per_ng_DNA"] = _fmt(max(values))
-            row[f"{clade}_n_technical_wells"] = len(values)
-        rows.append(row)
-    return rows
-
-
-def make_qpcr_population_figure(
-    rows: list[dict[str, Any]],
-) -> tuple[Path, Path]:
-    """Plot measured ppk1 abundance as population dynamics, not biomass growth."""
-    fig, ax = plt.subplots(figsize=(11.5, 5.8))
-    dates = [datetime.fromisoformat(row["date"]) for row in rows]
-    for key, label, color in (
-        ("clade_IA", "Clade IA", COLORS["anaerobic"]),
-        ("clade_IIA", "Clade IIA", COLORS["aerobic"]),
-    ):
-        means = [float(row[f"{key}_mean_copies_per_ng_DNA"]) for row in rows]
-        lower = [
-            mean - float(row[f"{key}_min_copies_per_ng_DNA"])
-            for mean, row in zip(means, rows)
-        ]
-        upper = [
-            float(row[f"{key}_max_copies_per_ng_DNA"]) - mean
-            for mean, row in zip(means, rows)
-        ]
-        ax.errorbar(
-            dates,
-            means,
-            yerr=[lower, upper],
-            color=color,
-            marker="o",
-            markersize=3,
-            linewidth=1.1,
-            elinewidth=0.55,
-            capsize=1.3,
-            label=label,
-            zorder=3,
-        )
-
-    reset_at = datetime.combine(REACTOR_RESEED_DATE, datetime.min.time())
-    ax.axvline(reset_at, color=COLORS["muted"], linestyle="--", linewidth=1, zorder=1)
-    ax.annotate(
-        "R1 reseeded\n28 Jan 2010",
-        xy=(reset_at, 0.95),
-        xycoords=("data", "axes fraction"),
-        xytext=(6, -4),
-        textcoords="offset points",
-        ha="left",
-        va="top",
-        fontsize=8,
-        color=COLORS["muted"],
-        bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "none", "alpha": 0.9},
-    )
-    ax.set_yscale("log")
-    ax.set_xlabel("Sampling date")
-    ax.set_ylabel("ppk1 gene copies per ng DNA (log scale)")
-    ax.set_title(
-        "Measured Accumulibacter population dynamics in an EBPR reactor",
-        loc="left",
-        color=COLORS["text"],
-        fontweight="bold",
-        pad=12,
-    )
-    ax.xaxis.set_major_locator(mdates.YearLocator(2))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    ax.grid(axis="y", color=COLORS["grid"], linewidth=0.7, which="major")
-    ax.grid(axis="y", color=COLORS["grid"], linewidth=0.35, which="minor", alpha=0.6)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.legend(frameon=False, ncol=2, loc="upper left")
-    fig.text(
-        0.12,
-        0.015,
-        "Points are arithmetic means; whiskers span technical qPCR wells (2–3 per date). "
-        "This is ppk1 abundance per DNA mass, not biomass concentration or an axenic growth curve.",
-        fontsize=8,
-        color=COLORS["muted"],
-    )
-    fig.subplots_adjust(bottom=0.17, top=0.88, left=0.10, right=0.98)
-    return _save_figure(fig, "figure_04_measured_population_dynamics")
-
-
 def _write_results_notes(
     phase_rows: list[dict[str, Any]],
     sensitivity_rows: list[dict[str, Any]],
-    qpcr_rows: list[dict[str, Any]],
 ) -> None:
     anaerobic, aerobic = phase_rows
     infeasible = sum(row["status"] != "optimal" for row in sensitivity_rows)
-    first_qpcr_date = qpcr_rows[0]["date"]
-    last_qpcr_date = qpcr_rows[-1]["date"]
     model_results = f"""# Model results
 
 ## Baseline optimization
@@ -539,29 +406,17 @@ The one-at-a-time analysis contains {len(sensitivity_rows)} optimization runs;
 `sensitivity_analysis.csv` and `../figures/figure_03_sensitivity_analysis.png`.
 The sweep demonstrates model constraint behavior, not parameter uncertainty or
 statistical significance.
-
-## Separate measured population time series
-
-Figure 4 and `qpcr_population_summary.csv` summarize a separately sourced
-Accumulibacter ppk1 qPCR dataset with {len(qpcr_rows)} sampling dates from
-{first_qpcr_date} to {last_qpcr_date}. The measurements are gene copies per ng
-DNA, not biomass concentration or model fluxes. They are shown as external
-biological context and are not used to fit or validate the teaching model.
-See `data_provenance.md` for attribution and processing details.
 """
-    growth_status = """# Growth curve status
+    future_work = """# Future work
 
-Figure 4 is a measured Accumulibacter population-abundance time series from
-ppk1 qPCR (gene copies per ng DNA) in a separate EBPR enrichment reactor. It is
-not a biomass-versus-time growth curve, cell concentration, or axenic growth
-experiment. Technical qPCR wells are not biological replicates.
+This project currently contains model outputs only. No wet-lab experiments or
+experimental measurements were conducted for this project.
 
-The teaching FBA model itself has no biomass reaction, biomass state variable,
-or time integration, so its steady-state fluxes cannot produce a growth curve.
-The external qPCR series is included as clearly attributed biological context,
-not as calibration or validation of the model. A true biomass growth curve
-would need matched OD600, VSS, or TSS measurements, with units and experimental
-conditions.
+The current model has no biomass reaction, biomass state variable, or time
+integration, so its steady-state fluxes cannot produce a growth curve. Future
+work could add a dynamic model and, if experimental work becomes available,
+validate it using documented biomass and phosphorus measurements with matched
+units, sampling times, and operating conditions.
 """
     figure_captions = """# Figure captions
 
@@ -575,20 +430,14 @@ conditions.
    parameter groups. Infeasible boundary cases are noted, not plotted as zero.
    No uncertainty intervals are available because these are deterministic
    teaching-model solves with arbitrary bounds.
-4. **Measured Accumulibacter population dynamics.** Arithmetic mean ppk1 qPCR
-   copies per ng DNA for clades IA and IIA, with whiskers showing the minimum
-   and maximum of 2–3 technical qPCR wells per date. The y-axis is logarithmic.
-   The dashed line marks the R1 reseeding event on 28 January 2010 described by
-   the source study. This independent reactor time series is not a biomass
-   growth curve or validation of the FBA model. See `data_provenance.md`.
 """
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     (RESULTS_DIR / "model_results.md").write_text(
         model_results, encoding="utf-8"
     )
-    (RESULTS_DIR / "growth_curve_status.md").write_text(
-        growth_status, encoding="utf-8"
+    (RESULTS_DIR / "future_work.md").write_text(
+        future_work, encoding="utf-8"
     )
     (RESULTS_DIR / "figure_captions.md").write_text(
         figure_captions, encoding="utf-8"
@@ -599,17 +448,14 @@ def generate_publication_outputs() -> dict[str, Any]:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     phase_rows = collect_phase_results()
     sensitivity_rows = run_sweeps()
-    qpcr_rows = collect_qpcr_summary()
     _write_csv(RESULTS_DIR / "phase_summary.csv", phase_rows)
     _write_csv(RESULTS_DIR / "sensitivity_analysis.csv", sensitivity_rows)
-    _write_csv(RESULTS_DIR / "qpcr_population_summary.csv", qpcr_rows)
-    _write_results_notes(phase_rows, sensitivity_rows, qpcr_rows)
+    _write_results_notes(phase_rows, sensitivity_rows)
 
     figures = [
         *make_phase_cycle_figure(phase_rows),
         *make_baseline_flux_figure(phase_rows),
         *make_sensitivity_figure(sensitivity_rows),
-        *make_qpcr_population_figure(qpcr_rows),
     ]
     return {
         "phase_rows": phase_rows,
@@ -620,10 +466,8 @@ def generate_publication_outputs() -> dict[str, Any]:
             str((RESULTS_DIR / "phase_summary.csv").relative_to(ROOT)),
             str((RESULTS_DIR / "sensitivity_analysis.csv").relative_to(ROOT)),
             str((RESULTS_DIR / "model_results.md").relative_to(ROOT)),
-            str((RESULTS_DIR / "growth_curve_status.md").relative_to(ROOT)),
+            str((RESULTS_DIR / "future_work.md").relative_to(ROOT)),
             str((RESULTS_DIR / "figure_captions.md").relative_to(ROOT)),
-            str((RESULTS_DIR / "qpcr_population_summary.csv").relative_to(ROOT)),
-            str((RESULTS_DIR / "data_provenance.md").relative_to(ROOT)),
         ],
     }
 
@@ -638,10 +482,6 @@ def main() -> None:
     )
     for path in output["figures"] + output["results"]:
         print(path)
-    print(
-        "Figure 4 is measured qPCR population dynamics, not a biomass growth "
-        "curve; the model itself has no biomass dynamics."
-    )
 
 
 if __name__ == "__main__":
