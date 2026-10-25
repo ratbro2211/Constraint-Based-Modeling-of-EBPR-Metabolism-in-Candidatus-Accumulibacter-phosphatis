@@ -18,3 +18,12 @@ The one-at-a-time analysis contains 30 optimization runs;
 `sensitivity_analysis.csv` and `../figures/figure_03_sensitivity_analysis.png`.
 The sweep demonstrates model constraint behavior, not parameter uncertainty or
 statistical significance.
+
+## Separate measured population time series
+
+Figure 4 and `qpcr_population_summary.csv` summarize a separately sourced
+Accumulibacter ppk1 qPCR dataset with 106 sampling dates from
+2005-02-03 to 2013-11-16. The measurements are gene copies per ng
+DNA, not biomass concentration or model fluxes. They are shown as external
+biological context and are not used to fit or validate the teaching model.
+See `data_provenance.md` for attribution and processing details.

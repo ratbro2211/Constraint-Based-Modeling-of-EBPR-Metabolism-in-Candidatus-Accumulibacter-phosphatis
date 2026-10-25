@@ -67,7 +67,9 @@ The tested runtime is Python 3.13.11 with the dependency versions pinned in
 
 The phase scripts write detailed reaction-flux tables to `artifacts/`. The
 publication-output script writes summary tables and interpretation notes to
-`results/`, and three figures as 300-dpi PNG plus vector PDF to `figures/`.
+`results/`, and four figures as 300-dpi PNG plus vector PDF to `figures/`. Figure
+4 uses an independently published, attributed qPCR time series; see
+`results/data_provenance.md`.
 The build script serializes the default anaerobic model to
 `models/ebpr_model.json`.
 
@@ -119,19 +121,27 @@ stoichiometry, not evidence that glycogen has a particular effect in real
 EBPR.
 
 The detailed reaction fluxes remain in `artifacts/`; publication-ready
-summaries, figure captions, and the growth-curve status are in `results/`.
+summaries, figure captions, data provenance, and growth-curve status are in
+`results/`.
 Figures are in `figures/figure_01_ebpr_phase_cycle.*`,
 `figures/figure_02_baseline_fluxes.*`, and
-`figures/figure_03_sensitivity_analysis.*`.
+`figures/figure_03_sensitivity_analysis.*`, plus the measured
+`figures/figure_04_measured_population_dynamics.*`.
 
-### Growth curve
+### Measured population time series
 
-There is no biomass-versus-time growth curve in this project. The current
-network performs two independent steady-state FBA optimizations; it has no
-biomass reaction, time integration, or experimental biomass time series. The
-model's flux values cannot be converted into a measured growth curve. See
-`results/growth_curve_status.md` for the specific data needed to add one
-without inventing experimental results.
+Figure 4 plots measured Accumulibacter `ppk1` qPCR abundance (copies per ng DNA)
+for clades IA and IIA over time in a separate EBPR enrichment reactor. The
+source file is included under `data/external/` with CC BY 4.0 attribution. This
+is a population-abundance trajectory, **not** a biomass growth curve: it is not
+OD600, VSS/TSS, or a cell count, and the time series is not an axenic culture
+growth experiment. The dashed line marks the reactor reseeding event reported
+by the source study.
+
+The FBA model still has no biomass reaction or time integration; its flux
+outputs cannot generate a biomass growth curve. The external qPCR series is
+not used to calibrate or validate the teaching model. See
+`results/growth_curve_status.md` and `results/data_provenance.md`.
 
 ## Important limitations
 
@@ -139,8 +149,8 @@ without inventing experimental results.
   it is **not elementally or charge balanced** and should not be treated as a
   biochemical reconstruction.
 - The ATP yields, reserve caps, and maintenance demand are illustrative
-  assumptions. No experimental data or reference stoichiometric model was
-  included in the starter repository.
+  assumptions. No experimental data or reference stoichiometric model is used
+  to calibrate the teaching model.
 - The two phases are independent steady-state optimizations. This model does
   not predict cycle duration, intracellular pool concentrations, wastewater
   treatment performance, or full-scale aeration/carbon dosing.
@@ -167,8 +177,8 @@ validation against wastewater-treatment data.
 
 ## References
 
-These papers support the qualitative process context only; the toy model's
-reaction coefficients and parameter values are not taken from them.
+The first two papers support the qualitative process context only; the toy
+model's reaction coefficients and parameter values are not taken from them.
 
 1. Smolders GJ, van der Meij J, van Loosdrecht MCM, Heijnen JJ. “Model of the
    anaerobic metabolism of the biological phosphorus removal process:
@@ -180,6 +190,12 @@ reaction coefficients and parameter values are not taken from them.
    process.” *Biotechnology and Bioengineering*. 1994;44(7):837–848.
    [PubMed](https://pubmed.ncbi.nlm.nih.gov/18618851/)
    · [DOI](https://doi.org/10.1002/bit.260440709)
+3. McDaniel, E. A., et al. (2022). *Signatures of Microbial Diversity at
+   Multiple Scales of Resolution within Engineered Enrichment Communities*.
+   bioRxiv preprint. [DOI](https://doi.org/10.1101/2022.10.01.510452)
+4. McDaniel, E. (2022). *Accumulibacter ppk1 qPCR Time-Series Raw Averages*.
+   Figshare dataset, CC BY 4.0.
+   [DOI](https://doi.org/10.6084/m9.figshare.21151624.v1)
 
 ## Author
 

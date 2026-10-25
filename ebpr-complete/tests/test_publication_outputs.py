@@ -1,4 +1,4 @@
-"""Regression tests for the reported steady-state results and figure outputs."""
+"""Regression tests for model outputs and the attributed qPCR time series."""
 
 import csv
 import subprocess
@@ -43,11 +43,16 @@ class TestPublicationOutputs(unittest.TestCase):
             "figures/figure_02_baseline_fluxes.pdf",
             "figures/figure_03_sensitivity_analysis.png",
             "figures/figure_03_sensitivity_analysis.pdf",
+            "figures/figure_04_measured_population_dynamics.png",
+            "figures/figure_04_measured_population_dynamics.pdf",
             "results/phase_summary.csv",
             "results/sensitivity_analysis.csv",
+            "results/qpcr_population_summary.csv",
             "results/model_results.md",
             "results/growth_curve_status.md",
             "results/figure_captions.md",
+            "results/data_provenance.md",
+            "data/external/r1_accumulibacter_ppk1_qpcr_raw_averages.csv",
         ]
         for relative_path in expected_paths:
             path = ROOT / relative_path
@@ -57,7 +62,20 @@ class TestPublicationOutputs(unittest.TestCase):
         growth_status = (ROOT / "results" / "growth_curve_status.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("No biomass-versus-time curve is produced", growth_status)
+        self.assertIn("not a biomass-versus-time growth curve", growth_status)
+
+    def test_qpcr_summary_uses_attributed_source_data_and_units(self):
+        with (ROOT / "results" / "qpcr_population_summary.csv").open(
+            newline="", encoding="utf-8"
+        ) as handle:
+            rows = list(csv.DictReader(handle))
+        self.assertEqual(len(rows), 106)
+        self.assertEqual(rows[0]["date"], "2005-02-03")
+        self.assertEqual(rows[-1]["date"], "2013-11-16")
+        self.assertAlmostEqual(
+            float(rows[0]["clade_IA_mean_copies_per_ng_DNA"]), 599000.0, places=4
+        )
+        self.assertEqual(rows[0]["clade_IA_n_technical_wells"], "3")
 
 
 if __name__ == "__main__":
