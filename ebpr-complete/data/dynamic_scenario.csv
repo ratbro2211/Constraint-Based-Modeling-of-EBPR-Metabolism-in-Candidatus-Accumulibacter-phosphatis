@@ -1,0 +1,4 @@
+parameter,value,unit,rationale
+anaerobic_duration,1.0,arbitrary_time_units,Illustrative scaling only; not calibrated to a reactor cycle
+initial_pha_pool,0.0,arbitrary_pool_units,Starts with no stored PHA before the anaerobic phase
+sample_points_per_phase,101,count,Rendering resolution only; not experimental sampling
