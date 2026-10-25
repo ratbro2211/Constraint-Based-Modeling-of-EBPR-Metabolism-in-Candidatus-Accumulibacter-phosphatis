@@ -6,10 +6,12 @@ O2_TRANSPORT,Oxygen transport,0
 EX_pi_e,Phosphate exchange,5.1
 PI_TRANSPORT,Phosphate uptake,0
 PI_EXPORT,Phosphate release,5.1
-EX_co2_e,Carbon dioxide exchange,0
+EX_co2_e,Carbon dioxide exchange,0.5
 ATPM,ATP maintenance demand,0.1
 AC_ACT,Acetate activation (one ATP per carbon unit),4.9
-GLYCOGEN_DEG,Lumped glycogen-to-carbon conversion (no ATP credit),0.5
+GLYCOGEN_DEG,Glycogen mobilization to a glucose-equivalent intermediate,0.5
+GLYCOLYSIS,Lumped glucose-to-pyruvate conversion (ATP and redox omitted),0.25
+PDH,Lumped pyruvate-to-acetyl-CoA conversion,0.5
 PHA_SYN,PHA synthesis,5.4
 PHA_ACCUM,PHA accumulation sink,5.4
 PHA_DEG,PHA degradation,0
