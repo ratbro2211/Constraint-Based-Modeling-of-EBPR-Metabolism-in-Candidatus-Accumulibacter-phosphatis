@@ -43,6 +43,11 @@ activation and reserve reactions are also deliberately simplified. These
 choices make energy/constraint tradeoffs visible without claiming a detailed
 glycogen pathway.
 
+Core reaction IDs follow the starter project where applicable: `AC_ACT`,
+`PHA_SYN`, `PHA_DEG`, `PP_SYN`, `PP_DEG`, `GLY_DEG`, `ATPM`, `EX_ac_e`,
+`EX_o2_e`, and `EX_pi_e`. COBRApy enforces steady-state balances (`S · v = 0`)
+and solves a linear program for each phase-specific objective.
+
 ## Run it
 
 From the repository root:
@@ -132,6 +137,13 @@ For research use, replace the aggregate reactions and parameter defaults with
 stoichiometries and bounds from a cited EBPR/Accumulibacter reconstruction,
 document the source, and validate predictions against appropriate data.
 
+## Potential relevance
+
+The starter project names aeration strategy, carbon dosing, phosphate-removal
+efficiency, and stress response as potential applications. This implementation
+does not calculate plant operating recommendations or removal efficiency; it
+only demonstrates qualitative flux tradeoffs under toy constraints.
+
 ## Future extensions
 
 These remain outside the current teaching-model scope: dynamic FBA linking
@@ -154,3 +166,7 @@ reaction coefficients and parameter values are not taken from them.
    process.” *Biotechnology and Bioengineering*. 1994;44(7):837–848.
    [PubMed](https://pubmed.ncbi.nlm.nih.gov/18618851/)
    · [DOI](https://doi.org/10.1002/bit.260440709)
+
+## Author
+
+Suraj Rathi
