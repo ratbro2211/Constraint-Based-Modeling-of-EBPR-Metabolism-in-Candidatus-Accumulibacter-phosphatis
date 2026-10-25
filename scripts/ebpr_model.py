@@ -86,7 +86,7 @@ def _network() -> Model:
             "Acetate activation (one ATP per carbon unit)",
             {"ac_c": -1, "atp_c": -1, "acetyl_c": 1, "adp_c": 1},
         ),
-        "GLYCOGEN_DEG": (
+        "GLY_DEG": (
             "Glycogen mobilization to a glucose-equivalent intermediate",
             {"glycogen_c": -1, "glucose_c": 0.5},
         ),
@@ -152,7 +152,7 @@ def build_model(
         enable("POLYP_RESERVE", 0.0, params["anaerobic_polyP_reserve"])
         enable("PP_DEG")
         enable("GLYCOGEN_RESERVE", 0.0, params["anaerobic_glycogen_reserve"])
-        enable("GLYCOGEN_DEG")
+        enable("GLY_DEG")
         enable("GLYCOLYSIS")
         enable("PDH")
         enable("PHA_SYN")
@@ -221,7 +221,7 @@ def print_summary(model: Model, solution) -> None:
         "PHA_SYN",
         "PHA_DEG",
         "PHA_ACCUM",
-        "GLYCOGEN_DEG",
+        "GLY_DEG",
         "GLYCOLYSIS",
         "PDH",
         "PP_DEG",
