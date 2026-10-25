@@ -2,9 +2,21 @@
 
 This repository contains a small COBRApy flux-balance-analysis (FBA) teaching
 model for the anaerobic/aerobic cycle associated with enhanced biological
-phosphorus removal (EBPR). It is an executable starting point for exploring
-phase switching, not a validated reconstruction of *Candidatus Accumulibacter
-phosphatis*.
+phosphorus removal (EBPR). It is designed to demonstrate how environmental
+constraints change feasible storage fluxes; it is not a validated reconstruction
+of *Candidatus Accumulibacter phosphatis*.
+
+## Project question
+
+In a deliberately simplified steady-state model, how do acetate availability,
+polyphosphate and glycogen reserves, oxygen availability, and ATP maintenance
+affect PHA storage under anaerobic conditions and polyphosphate storage under
+aerobic conditions?
+
+The qualitative two-phase cycle follows published descriptions of anaerobic
+acetate uptake/PHA synthesis with phosphate release, followed by aerobic PHA
+oxidation and phosphate uptake. The model here does **not** reproduce the
+published stoichiometric coefficients; see [References](#references).
 
 ## What the model represents
 
@@ -47,9 +59,9 @@ script writes `artifacts/sensitivity_analysis.csv` and
 `artifacts/sensitivity_analysis.png`. The build script serializes the default
 anaerobic model to `models/ebpr_model.json`.
 
-The existing `SBM_tutorial_1.ipynb` is an unrelated OpenSMOG protein-folding
-tutorial; it is not used by the EBPR scripts. A standalone copy is available in
-the [OpenSMOG tutorial repository](https://github.com/ratbro2211/opensmog-protein-folding-tutorial).
+The unrelated OpenSMOG protein-folding notebook has been separated into its
+[own tutorial repository](https://github.com/ratbro2211/opensmog-protein-folding-tutorial);
+it is not part of the EBPR model.
 
 ## Sensitivity runs
 
@@ -61,10 +73,34 @@ than silently reported as zero flux.
 Default bounds are in `data/parameters.csv`. They are arbitrary teaching-model
 flux units, not measured rates or calibrated process parameters.
 
-With the checked-in defaults, the solver returns a PHA accumulation flux of
-5.4 and phosphate release of 5.1 in the anaerobic run. The aerobic run returns
-polyphosphate accumulation of 19.9. These are outputs of the illustrative
-equations and bounds above—not empirical EBPR rates or predictions.
+## Results
+
+All values below are solver outputs from the checked-in teaching-model
+equations. They are not empirical EBPR rates or predictions.
+
+| Default scenario | Objective flux | Supporting fluxes |
+| --- | ---: | --- |
+| Anaerobic PHA accumulation | 5.4 | Polyphosphate degradation 5.0; net phosphate release 5.1 |
+| Aerobic polyphosphate accumulation | 19.9 | PHA degradation 6.67; oxygen uptake 10.0; net phosphate uptake 19.8 |
+
+The one-at-a-time sweeps show the model's expected constraint response:
+
+- **Anaerobic acetate cap:** PHA accumulation rises from 0.5 at an acetate cap
+  of 0 to 5.4 at a cap of 5; increasing acetate further has no effect because
+  the polyphosphate/energy supply becomes limiting.
+- **Anaerobic polyphosphate reserve:** no reserve makes the phase infeasible
+  under the required ATP-maintenance demand; increasing the reserve from 1 to
+  7.5 raises PHA accumulation from 1.4 to 7.9.
+- **Anaerobic glycogen reserve:** increasing the carbon-only glycogen reserve
+  from 0 to 2 raises PHA accumulation from 4.9 to 6.9.
+- **Aerobic oxygen cap:** zero oxygen makes the phase infeasible; increasing the
+  cap from 2.5 to 10 raises polyphosphate accumulation from 4.9 to 19.9.
+- **ATP maintenance:** increasing the demand from 0 to 1 lowers anaerobic PHA
+  accumulation from 5.5 to 4.5 and aerobic polyphosphate accumulation from 20
+  to 19.
+
+The detailed fluxes and the plotted sensitivity sweep are checked in under
+`artifacts/`.
 
 ## Important limitations
 
@@ -83,3 +119,19 @@ equations and bounds above—not empirical EBPR rates or predictions.
 For research use, replace the aggregate reactions and parameter defaults with
 stoichiometries and bounds from a cited EBPR/Accumulibacter reconstruction,
 document the source, and validate predictions against appropriate data.
+
+## References
+
+These papers support the qualitative process context only; the toy model's
+reaction coefficients and parameter values are not taken from them.
+
+1. Smolders GJ, van der Meij J, van Loosdrecht MCM, Heijnen JJ. “Model of the
+   anaerobic metabolism of the biological phosphorus removal process:
+   Stoichiometry and pH influence.” *Biotechnology and Bioengineering*.
+   1994;43(6):461–470. [PubMed](https://pubmed.ncbi.nlm.nih.gov/18615742/)
+   · [DOI](https://doi.org/10.1002/bit.260430605)
+2. Smolders GJ, van der Meij J, van Loosdrecht MCM, Heijnen JJ. “Stoichiometric
+   model of the aerobic metabolism of the biological phosphorus removal
+   process.” *Biotechnology and Bioengineering*. 1994;44(7):837–848.
+   [PubMed](https://pubmed.ncbi.nlm.nih.gov/18618851/)
+   · [DOI](https://doi.org/10.1002/bit.260440709)
