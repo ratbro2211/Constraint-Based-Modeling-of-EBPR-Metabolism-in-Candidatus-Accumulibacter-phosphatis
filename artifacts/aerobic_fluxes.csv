@@ -9,7 +9,7 @@ PI_EXPORT,Phosphate release,0
 EX_co2_e,Carbon dioxide exchange,13.333333
 ATPM,ATP maintenance demand,0.1
 AC_ACT,Acetate activation (one ATP per carbon unit),0
-GLYCOGEN_DEG,Glycogen mobilization to a glucose-equivalent intermediate,0
+GLY_DEG,Glycogen mobilization to a glucose-equivalent intermediate,0
 GLYCOLYSIS,Lumped glucose-to-pyruvate conversion (ATP and redox omitted),0
 PDH,Lumped pyruvate-to-acetyl-CoA conversion,0
 PHA_SYN,PHA synthesis,0
