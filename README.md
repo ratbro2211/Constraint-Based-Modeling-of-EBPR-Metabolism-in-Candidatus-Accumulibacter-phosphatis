@@ -161,7 +161,7 @@ Project based on EBPR metabolic modeling framework and constraint-based analysis
 ---
 
 ## 👨‍💻 Author
-[Your Name]
+Suraj Rathi
 
 ---
 
