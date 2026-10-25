@@ -52,6 +52,8 @@ def _network() -> Model:
         "ac_e": ("Acetate, external", "e"),
         "ac_c": ("Acetate, cell", "c"),
         "acetyl_c": ("Acetyl-CoA carbon unit", "c"),
+        "glucose_c": ("Glucose-equivalent intermediate", "c"),
+        "pyruvate_c": ("Pyruvate carbon unit", "c"),
         "pha_c": ("PHA repeat unit", "c"),
         "pp_c": ("Polyphosphate unit", "c"),
         "pi_e": ("Phosphate, external", "e"),
@@ -85,8 +87,16 @@ def _network() -> Model:
             {"ac_c": -1, "atp_c": -1, "acetyl_c": 1, "adp_c": 1},
         ),
         "GLYCOGEN_DEG": (
-            "Lumped glycogen-to-carbon conversion (no ATP credit)",
-            {"glycogen_c": -1, "acetyl_c": 1},
+            "Glycogen mobilization to a glucose-equivalent intermediate",
+            {"glycogen_c": -1, "glucose_c": 0.5},
+        ),
+        "GLYCOLYSIS": (
+            "Lumped glucose-to-pyruvate conversion (ATP and redox omitted)",
+            {"glucose_c": -1, "pyruvate_c": 2},
+        ),
+        "PDH": (
+            "Lumped pyruvate-to-acetyl-CoA conversion",
+            {"pyruvate_c": -1, "acetyl_c": 1, "co2_e": 1},
         ),
         "PHA_SYN": ("PHA synthesis", {"acetyl_c": -1, "pha_c": 1}),
         "PHA_ACCUM": ("PHA accumulation sink", {"pha_c": -1}),
@@ -143,10 +153,13 @@ def build_model(
         enable("PP_DEG")
         enable("GLYCOGEN_RESERVE", 0.0, params["anaerobic_glycogen_reserve"])
         enable("GLYCOGEN_DEG")
+        enable("GLYCOLYSIS")
+        enable("PDH")
         enable("PHA_SYN")
         enable("PHA_ACCUM")
         enable("PI_EXPORT")
         enable("EX_pi_e", 0.0, BIG_M)
+        enable("EX_co2_e", 0.0, BIG_M)
         model.objective = "PHA_ACCUM"
     else:
         enable("PHA_RESERVE", 0.0, params["aerobic_PHA_reserve"])
@@ -208,6 +221,9 @@ def print_summary(model: Model, solution) -> None:
         "PHA_SYN",
         "PHA_DEG",
         "PHA_ACCUM",
+        "GLYCOGEN_DEG",
+        "GLYCOLYSIS",
+        "PDH",
         "PP_DEG",
         "PP_SYN",
         "PP_ACCUM",
