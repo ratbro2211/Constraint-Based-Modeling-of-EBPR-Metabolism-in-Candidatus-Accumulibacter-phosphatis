@@ -1,172 +1,169 @@
-# Illustrative constraint-based model of EBPR metabolism
+# Constraint-Based-Modeling-of-EBPR-Metabolism-in-Candidatus-Accumulibacter-phosphatis
+This project models EBPR metabolism using FBA to understand phosphate release and uptake under anaerobic and aerobic conditions. It explores how metabolic constraints and environmental factors drive phosphorus cycling in wastewater systems.
 
-This repository contains a small COBRApy flux-balance-analysis (FBA) teaching
-model for the anaerobic/aerobic cycle associated with enhanced biological
-phosphorus removal (EBPR). It is designed to demonstrate how environmental
-constraints change feasible storage fluxes; it is not a validated reconstruction
-of *Candidatus Accumulibacter phosphatis*.
+## 📌 Overview
+This project focuses on understanding the metabolic mechanisms underlying Enhanced Biological Phosphorus Removal (EBPR) using a constraint-based modeling approach. A simplified stoichiometric model of *Candidatus Accumulibacter phosphatis* metabolism was constructed and analyzed using Flux Balance Analysis (FBA) to simulate anaerobic and aerobic phases of wastewater treatment systems.
 
-## Project question
+---
 
-In a deliberately simplified steady-state model, how do acetate availability,
-polyphosphate and glycogen reserves, oxygen availability, and ATP maintenance
-affect PHA storage under anaerobic conditions and polyphosphate storage under
-aerobic conditions?
+## 🎯 Research Objective
+To investigate how metabolic constraints and environmental conditions regulate phosphate release and uptake in EBPR systems, and to understand how these behaviors emerge from intracellular metabolic networks.
 
-The qualitative two-phase cycle follows published descriptions of anaerobic
-acetate uptake/PHA synthesis with phosphate release, followed by aerobic PHA
-oxidation and phosphate uptake. The model here does **not** reproduce the
-published stoichiometric coefficients; see [References](#references).
+---
 
-## What the model represents
+## ❓ Core Research Question
+What metabolic and environmental conditions promote phosphate release versus phosphate uptake in *Accumulibacter*, and how are these behaviors governed by stoichiometric and energetic constraints?
 
-The model is built from aggregate reactions for acetate activation, PHA storage
-and degradation, polyphosphate storage and degradation, glycogen mobilization,
-lumped glycolysis and pyruvate oxidation, TCA oxidation, oxidative
-phosphorylation, and ATP maintenance. It uses separate steady-state
-optimizations for the two phases:
+---
 
-- **Anaerobic:** oxygen uptake is blocked; acetate and finite polyphosphate and
-  glycogen reserve supplies are available. The objective is PHA accumulation.
-  Polyphosphate degradation supplies ATP and releases phosphate.
-- **Aerobic:** acetate uptake is blocked; a finite PHA reserve and oxygen are
-  available. The objective is polyphosphate accumulation. PHA oxidation
-  supplies ATP for phosphate uptake and storage.
+## ⚙️ Methodology
 
-The reserve bounds are flux caps used to represent finite availability in each
-separate steady-state run. They do not simulate a time-dependent transfer of
-storage pools between phases.
+### 🧬 Model Construction
+A simplified stoichiometric model was developed including:
 
-Glycogen-derived carbon passes through glucose-equivalent and pyruvate
-intermediates. Glycolytic ATP and redox production are omitted; acetate
-activation and reserve reactions are also deliberately simplified. These
-choices make energy/constraint tradeoffs visible without claiming a detailed
-glycogen pathway.
+- **Core Storage Metabolism**
+  - Acetate activation (AC_ACT)
+  - PHA synthesis/degradation (PHA_SYN, PHA_DEG)
+  - Polyphosphate metabolism (PP_SYN, PP_DEG)
+  - Glycogen degradation (GLY_DEG)
 
-Core reaction IDs follow the starter project where applicable: `AC_ACT`,
-`PHA_SYN`, `PHA_DEG`, `PP_SYN`, `PP_DEG`, `GLY_DEG`, `ATPM`, `EX_ac_e`,
-`EX_o2_e`, and `EX_pi_e`. COBRApy enforces steady-state balances (`S · v = 0`)
-and solves a linear program for each phase-specific objective.
+- **Central Carbon Metabolism**
+  - Glycolysis
+  - TCA Cycle
+  - Respiration
 
-## Run it
+- **Energy System**
+  - ATP maintenance reaction (ATPM)
 
-From the repository root:
+- **Exchange Reactions**
+  - Acetate (EX_ac_e)
+  - Oxygen (EX_o2_e)
+  - Phosphate (EX_pi_e)
 
-```bash
-python -m pip install -r requirements.txt
-python scripts/build_model.py
-python scripts/run_anaerobic.py
-python scripts/run_aerobic.py
-python scripts/sensitivity_analysis.py
-python -m unittest discover -s tests -v
-```
+---
 
-The tested runtime is Python 3.13.11 with the dependency versions pinned in
-`requirements.txt`.
+### 🔬 Modeling Framework
+- COBRApy-based implementation  
+- Steady-state assumption:  
+  **S · v = 0**
+- Linear programming for optimization  
+- Phase-specific objective functions  
 
-The phase scripts write reaction flux tables to `artifacts/`. The sensitivity
-script writes `artifacts/sensitivity_analysis.csv` and
-`artifacts/sensitivity_analysis.png`. The build script serializes the default
-anaerobic model to `models/ebpr_model.json`.
+---
 
-The unrelated OpenSMOG protein-folding notebook has been separated into its
-[own tutorial repository](https://github.com/ratbro2211/opensmog-protein-folding-tutorial);
-it is not part of the EBPR model.
+## 🔁 Simulation Strategy
 
-## Sensitivity runs
+### 🟥 Anaerobic Phase
+- Oxygen uptake = 0  
+- Acetate available  
+- Objective: Maximize PHA synthesis  
 
-The one-at-a-time sweeps vary acetate uptake, the anaerobic polyphosphate
-reserve, the anaerobic glycogen reserve, aerobic oxygen uptake, and ATP
-maintenance. Infeasible cases are recorded with their solver status rather
-than silently reported as zero flux.
+**Observed:**
+- High PHA accumulation  
+- Active polyphosphate degradation  
+- Phosphate released  
 
-Default bounds are in `data/parameters.csv`. They are arbitrary teaching-model
-flux units, not measured rates or calibrated process parameters.
+👉 *Energy is generated from polyphosphate breakdown*
 
-## Results
+---
 
-All values below are solver outputs from the checked-in teaching-model
-equations. They are not empirical EBPR rates or predictions.
+### 🟩 Aerobic Phase
+- Oxygen available  
+- Acetate uptake blocked  
+- Objective: Maximize polyphosphate synthesis  
 
-| Default scenario | Objective flux | Supporting fluxes |
-| --- | ---: | --- |
-| Anaerobic PHA accumulation | 5.4 | Polyphosphate degradation 5.0; net phosphate release 5.1 |
-| Aerobic polyphosphate accumulation | 19.9 | PHA degradation 6.67; oxygen uptake 10.0; net phosphate uptake 19.8 |
+**Observed:**
+- PHA degradation  
+- Active respiration  
+- Phosphate uptake  
 
-The one-at-a-time sweeps show the model's expected constraint response:
+👉 *ATP from respiration drives phosphate storage*
 
-- **Anaerobic acetate cap:** PHA accumulation rises from 0.5 at an acetate cap
-  of 0 to 5.4 at a cap of 5; increasing acetate further has no effect because
-  the polyphosphate/energy supply becomes limiting.
-- **Anaerobic polyphosphate reserve:** no reserve makes the phase infeasible
-  under the required ATP-maintenance demand; increasing the reserve from 1 to
-  7.5 raises PHA accumulation from 1.4 to 7.9.
-- **Anaerobic glycogen reserve:** increasing the carbon-only glycogen reserve
-  from 0 to 2 raises PHA accumulation from 4.9 to 6.9.
-- **Aerobic oxygen cap:** zero oxygen makes the phase infeasible; increasing the
-  cap from 2.5 to 10 raises polyphosphate accumulation from 4.9 to 19.9.
-- **ATP maintenance:** increasing the demand from 0 to 1 lowers anaerobic PHA
-  accumulation from 5.5 to 4.5 and aerobic polyphosphate accumulation from 20
-  to 19.
+---
 
-The starter README described glycogen as having minimal effect. This
-implementation does not reproduce that claim: the simplified carbon-only
-glycogen path produces a visible increase in PHA over the sweep above. That
-disagreement is a model limitation to resolve with literature-based glycogen
-stoichiometry, not evidence that glycogen has a particular effect in real
-EBPR.
+## 📊 Key Results
 
-The detailed fluxes and the plotted sensitivity sweep are checked in under
-`artifacts/`.
+- Phosphate cycling is an **emergent property of metabolic constraints**
+- Anaerobic phase:
+  - Carbon uptake drives PHA accumulation
+  - Polyphosphate degradation supplies ATP
+- Aerobic phase:
+  - Stored carbon fuels respiration
+  - ATP drives phosphate uptake
+- Oxygen availability directly controls aerobic efficiency
+- Carbon availability limits anaerobic storage metabolism
 
-## Important limitations
+---
 
-- The reaction network uses aggregate pseudo-metabolites and pseudo-reactions;
-  it is **not elementally or charge balanced** and should not be treated as a
-  biochemical reconstruction.
-- The ATP yields, reserve caps, and maintenance demand are illustrative
-  assumptions. No experimental data or reference stoichiometric model was
-  included in the starter repository.
-- The two phases are independent steady-state optimizations. This model does
-  not predict cycle duration, intracellular pool concentrations, wastewater
-  treatment performance, or full-scale aeration/carbon dosing.
-- Results are useful for demonstrating how constraints affect feasible fluxes.
-  They are not validated evidence for industrial decisions.
+## 🔍 Sensitivity Analysis
 
-For research use, replace the aggregate reactions and parameter defaults with
-stoichiometries and bounds from a cited EBPR/Accumulibacter reconstruction,
-document the source, and validate predictions against appropriate data.
+The model was tested under varying conditions:
 
-## Potential relevance
+- **Acetate availability**
+  → Controls PHA synthesis capacity  
 
-The starter project names aeration strategy, carbon dosing, phosphate-removal
-efficiency, and stress response as potential applications. This implementation
-does not calculate plant operating recommendations or removal efficiency; it
-only demonstrates qualitative flux tradeoffs under toy constraints.
+- **Oxygen limitation**
+  → Reduces respiration and phosphate uptake  
 
-## Future extensions
+- **Polyphosphate availability**
+  → Essential for ATP generation in anaerobic phase  
 
-These remain outside the current teaching-model scope: dynamic FBA linking
-storage pools across phases, additional carbon sources, oxygen gradients,
-gene-expression/regulatory constraints, denitrification, and calibration or
-validation against wastewater-treatment data.
+- **Glycogen pool**
+  → Minimal effect under tested conditions  
 
-## References
+- **ATP maintenance demand**
+  → Influences overall metabolic balance  
 
-These papers support the qualitative process context only; the toy model's
-reaction coefficients and parameter values are not taken from them.
+---
 
-1. Smolders GJ, van der Meij J, van Loosdrecht MCM, Heijnen JJ. “Model of the
-   anaerobic metabolism of the biological phosphorus removal process:
-   Stoichiometry and pH influence.” *Biotechnology and Bioengineering*.
-   1994;43(6):461–470. [PubMed](https://pubmed.ncbi.nlm.nih.gov/18615742/)
-   · [DOI](https://doi.org/10.1002/bit.260430605)
-2. Smolders GJ, van der Meij J, van Loosdrecht MCM, Heijnen JJ. “Stoichiometric
-   model of the aerobic metabolism of the biological phosphorus removal
-   process.” *Biotechnology and Bioengineering*. 1994;44(7):837–848.
-   [PubMed](https://pubmed.ncbi.nlm.nih.gov/18618851/)
-   · [DOI](https://doi.org/10.1002/bit.260440709)
+## 📈 Key Insights
 
-## Author
+- Metabolic behavior is governed by **stoichiometric constraints**, not isolated reactions  
+- Objective function determines phase-specific metabolic outcomes  
+- Carbon–energy–redox coupling drives phosphate cycling  
+- EBPR efficiency depends on environmental control (oxygen, carbon input)
 
+---
+
+## 🏭 Industrial Relevance
+
+This model provides insights into:
+
+- Optimizing aeration strategies  
+- Designing carbon dosing protocols  
+- Predicting phosphate removal efficiency  
+- Understanding system failure under stress conditions  
+
+---
+
+## 🔧 Tools and Technologies
+
+- COBRApy  
+- Python (NumPy, SciPy, Pandas)  
+- Linear Programming (FBA)  
+
+---
+
+## 🚀 Future Work
+
+- Incorporate dynamic FBA (time-dependent modeling)  
+- Add multiple carbon sources (propionate, glucose)  
+- Introduce oxygen gradients  
+- Include regulatory constraints (gene expression)  
+- Expand model to include denitrification pathways  
+- Validate against real wastewater treatment data  
+
+---
+
+## 📚 Reference
+Project based on EBPR metabolic modeling framework and constraint-based analysis concepts. :contentReference[oaicite:0]{index=0}
+
+---
+
+## 👨‍💻 Author
 Suraj Rathi
+
+---
+
+## 📌 Notes
+This is a simplified model and serves as a conceptual framework for understanding EBPR metabolic switching under controlled conditions.

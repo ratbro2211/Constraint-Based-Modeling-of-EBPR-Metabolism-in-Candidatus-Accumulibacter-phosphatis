@@ -1,0 +1,373 @@
+{
+"metabolites":[
+{
+"id":"ac_e",
+"name":"Acetate, external",
+"compartment":"e"
+},
+{
+"id":"ac_c",
+"name":"Acetate, cell",
+"compartment":"c"
+},
+{
+"id":"acetyl_c",
+"name":"Acetyl-CoA carbon unit",
+"compartment":"c"
+},
+{
+"id":"glucose_c",
+"name":"Glucose-equivalent intermediate",
+"compartment":"c"
+},
+{
+"id":"pyruvate_c",
+"name":"Pyruvate carbon unit",
+"compartment":"c"
+},
+{
+"id":"pha_c",
+"name":"PHA repeat unit",
+"compartment":"c"
+},
+{
+"id":"pp_c",
+"name":"Polyphosphate unit",
+"compartment":"c"
+},
+{
+"id":"pi_e",
+"name":"Phosphate, external",
+"compartment":"e"
+},
+{
+"id":"pi_c",
+"name":"Phosphate, cell",
+"compartment":"c"
+},
+{
+"id":"o2_e",
+"name":"Oxygen, external",
+"compartment":"e"
+},
+{
+"id":"o2_c",
+"name":"Oxygen, cell",
+"compartment":"c"
+},
+{
+"id":"co2_e",
+"name":"Carbon dioxide, external",
+"compartment":"e"
+},
+{
+"id":"nad_c",
+"name":"NAD+",
+"compartment":"c"
+},
+{
+"id":"nadh_c",
+"name":"NADH",
+"compartment":"c"
+},
+{
+"id":"atp_c",
+"name":"ATP",
+"compartment":"c"
+},
+{
+"id":"adp_c",
+"name":"ADP",
+"compartment":"c"
+},
+{
+"id":"glycogen_c",
+"name":"Glycogen carbon reserve unit",
+"compartment":"c"
+}
+],
+"reactions":[
+{
+"id":"EX_ac_e",
+"name":"Acetate exchange",
+"metabolites":{
+"ac_e":-1
+},
+"lower_bound":-10.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"AC_TRANSPORT",
+"name":"Acetate transport",
+"metabolites":{
+"ac_c":1,
+"ac_e":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"EX_o2_e",
+"name":"Oxygen exchange",
+"metabolites":{
+"o2_e":-1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"O2_TRANSPORT",
+"name":"Oxygen transport",
+"metabolites":{
+"o2_c":1,
+"o2_e":-1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"EX_pi_e",
+"name":"Phosphate exchange",
+"metabolites":{
+"pi_e":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PI_TRANSPORT",
+"name":"Phosphate uptake",
+"metabolites":{
+"pi_c":1,
+"pi_e":-1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PI_EXPORT",
+"name":"Phosphate release",
+"metabolites":{
+"pi_c":-1,
+"pi_e":1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"EX_co2_e",
+"name":"Carbon dioxide exchange",
+"metabolites":{
+"co2_e":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"ATPM",
+"name":"ATP maintenance demand",
+"metabolites":{
+"adp_c":1,
+"atp_c":-1,
+"pi_c":1
+},
+"lower_bound":0.1,
+"upper_bound":0.1,
+"gene_reaction_rule":""
+},
+{
+"id":"AC_ACT",
+"name":"Acetate activation (one ATP per carbon unit)",
+"metabolites":{
+"ac_c":-1,
+"acetyl_c":1,
+"adp_c":1,
+"atp_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"GLY_DEG",
+"name":"Glycogen mobilization to a glucose-equivalent intermediate",
+"metabolites":{
+"glucose_c":0.5,
+"glycogen_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"GLYCOLYSIS",
+"name":"Lumped glucose-to-pyruvate conversion (ATP and redox omitted)",
+"metabolites":{
+"glucose_c":-1,
+"pyruvate_c":2
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PDH",
+"name":"Lumped pyruvate-to-acetyl-CoA conversion",
+"metabolites":{
+"acetyl_c":1,
+"co2_e":1,
+"pyruvate_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PHA_SYN",
+"name":"PHA synthesis",
+"metabolites":{
+"acetyl_c":-1,
+"pha_c":1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PHA_ACCUM",
+"name":"PHA accumulation sink",
+"metabolites":{
+"pha_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":"",
+"objective_coefficient":1.0
+},
+{
+"id":"PHA_DEG",
+"name":"PHA degradation",
+"metabolites":{
+"acetyl_c":1,
+"pha_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PP_DEG",
+"name":"Polyphosphate degradation (one ATP per unit)",
+"metabolites":{
+"adp_c":-1,
+"atp_c":1,
+"pi_c":1,
+"pp_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PP_SYN",
+"name":"Polyphosphate synthesis (one ATP per unit)",
+"metabolites":{
+"adp_c":1,
+"atp_c":-1,
+"pi_c":-1,
+"pp_c":1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PP_ACCUM",
+"name":"Polyphosphate accumulation sink",
+"metabolites":{
+"pp_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"TCA",
+"name":"Lumped TCA oxidation",
+"metabolites":{
+"acetyl_c":-1,
+"co2_e":2,
+"nad_c":-3,
+"nadh_c":3
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"OXPHOS",
+"name":"Lumped oxidative phosphorylation (three ATP per carbon unit)",
+"metabolites":{
+"adp_c":-3,
+"atp_c":3,
+"nad_c":3,
+"nadh_c":-3,
+"o2_c":-1.5
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+},
+{
+"id":"POLYP_RESERVE",
+"name":"Finite polyphosphate reserve supply",
+"metabolites":{
+"pp_c":1
+},
+"lower_bound":0.0,
+"upper_bound":5.0,
+"gene_reaction_rule":""
+},
+{
+"id":"GLYCOGEN_RESERVE",
+"name":"Finite glycogen reserve supply",
+"metabolites":{
+"glycogen_c":1
+},
+"lower_bound":0.0,
+"upper_bound":0.5,
+"gene_reaction_rule":""
+},
+{
+"id":"PHA_RESERVE",
+"name":"Finite stored-PHA supply",
+"metabolites":{
+"pha_c":1
+},
+"lower_bound":0.0,
+"upper_bound":0.0,
+"gene_reaction_rule":""
+}
+],
+"genes":[],
+"id":"illustrative_ebpr",
+"compartments":{
+"c":"",
+"e":""
+},
+"notes":{
+"model_type":"illustrative teaching model",
+"phase":"anaerobic",
+"stoichiometry":"aggregate pseudo-reactions; not atom-balanced",
+"units":"arbitrary steady-state flux units"
+},
+"version":"1"
+}

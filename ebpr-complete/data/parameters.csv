@@ -1,0 +1,8 @@
+parameter,value,unit,description
+anaerobic_acetate_max,10,arbitrary flux units,Maximum acetate uptake in the anaerobic phase
+anaerobic_polyP_reserve,5,arbitrary flux units,Finite polyphosphate reserve supply cap for the anaerobic phase
+anaerobic_glycogen_reserve,0.5,arbitrary flux units,Finite glycogen reserve supply cap for the anaerobic phase
+aerobic_PHA_reserve,10,arbitrary flux units,Finite stored-PHA supply cap for the aerobic phase
+aerobic_oxygen_max,10,arbitrary flux units,Maximum oxygen uptake in the aerobic phase
+pi_uptake_max,20,arbitrary flux units,Maximum phosphate uptake in the aerobic phase
+atp_maintenance,0.1,arbitrary flux units,Fixed ATP maintenance demand in each phase
