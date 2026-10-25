@@ -16,6 +16,16 @@
 "compartment":"c"
 },
 {
+"id":"glucose_c",
+"name":"Glucose-equivalent intermediate",
+"compartment":"c"
+},
+{
+"id":"pyruvate_c",
+"name":"Pyruvate carbon unit",
+"compartment":"c"
+},
+{
 "id":"pha_c",
 "name":"PHA repeat unit",
 "compartment":"c"
@@ -158,7 +168,7 @@
 "co2_e":-1
 },
 "lower_bound":0.0,
-"upper_bound":0.0,
+"upper_bound":1000.0,
 "gene_reaction_rule":""
 },
 {
@@ -188,10 +198,33 @@
 },
 {
 "id":"GLYCOGEN_DEG",
-"name":"Lumped glycogen-to-carbon conversion (no ATP credit)",
+"name":"Glycogen mobilization to a glucose-equivalent intermediate",
+"metabolites":{
+"glucose_c":0.5,
+"glycogen_c":-1
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"GLYCOLYSIS",
+"name":"Lumped glucose-to-pyruvate conversion (ATP and redox omitted)",
+"metabolites":{
+"glucose_c":-1,
+"pyruvate_c":2
+},
+"lower_bound":0.0,
+"upper_bound":1000.0,
+"gene_reaction_rule":""
+},
+{
+"id":"PDH",
+"name":"Lumped pyruvate-to-acetyl-CoA conversion",
 "metabolites":{
 "acetyl_c":1,
-"glycogen_c":-1
+"co2_e":1,
+"pyruvate_c":-1
 },
 "lower_bound":0.0,
 "upper_bound":1000.0,
