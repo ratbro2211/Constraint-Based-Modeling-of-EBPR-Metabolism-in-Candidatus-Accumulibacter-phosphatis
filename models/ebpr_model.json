@@ -197,7 +197,7 @@
 "gene_reaction_rule":""
 },
 {
-"id":"GLYCOGEN_DEG",
+"id":"GLY_DEG",
 "name":"Glycogen mobilization to a glucose-equivalent intermediate",
 "metabolites":{
 "glucose_c":0.5,
