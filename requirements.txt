@@ -1,4 +1,0 @@
-cobra
-pandas
-numpy
-matplotlib
