@@ -20,6 +20,9 @@ class TestEBPRPhases(unittest.TestCase):
         self.assertGreater(solution.fluxes["EX_pi_e"], 0)
         self.assertLess(solution.fluxes["EX_ac_e"], 0)
         self.assertAlmostEqual(solution.fluxes["EX_o2_e"], 0)
+        self.assertAlmostEqual(solution.fluxes["PHA_ACCUM"], 5.4, places=6)
+        self.assertAlmostEqual(solution.fluxes["PP_DEG"], 5.0, places=6)
+        self.assertAlmostEqual(solution.fluxes["EX_pi_e"], 5.1, places=6)
         self.assertAlmostEqual(
             solution.fluxes["PHA_SYN"], solution.fluxes["PHA_ACCUM"]
         )
@@ -35,6 +38,8 @@ class TestEBPRPhases(unittest.TestCase):
         self.assertLess(solution.fluxes["EX_o2_e"], 0)
         self.assertLess(solution.fluxes["EX_pi_e"], 0)
         self.assertAlmostEqual(solution.fluxes["EX_ac_e"], 0)
+        self.assertAlmostEqual(solution.fluxes["PP_ACCUM"], 19.9, places=6)
+        self.assertAlmostEqual(solution.fluxes["PHA_DEG"], 20 / 3, places=6)
         self.assertAlmostEqual(
             solution.fluxes["PP_SYN"], solution.fluxes["PP_ACCUM"]
         )
