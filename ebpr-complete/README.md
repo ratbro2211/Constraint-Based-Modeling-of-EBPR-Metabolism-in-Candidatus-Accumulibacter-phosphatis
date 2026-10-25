@@ -59,6 +59,7 @@ python scripts/run_anaerobic.py
 python scripts/run_aerobic.py
 python scripts/sensitivity_analysis.py
 python scripts/generate_publication_outputs.py
+python scripts/dynamic_illustration.py
 python scripts/create_review_report.py
 python -m unittest discover -s tests -v
 ```
@@ -69,8 +70,11 @@ The tested runtime is Python 3.13.11 with the dependency versions pinned in
 The phase scripts write detailed reaction-flux tables to `artifacts/`. The
 publication-output script writes summary tables and interpretation notes to
 `results/`, and three model-output figures as 300-dpi PNG plus vector PDF to
-`figures/`. Run `create_review_report.py` after generating the outputs to assemble
-the model results and figures into `results/EBPR_review_report.pdf`.
+`figures/`. The separate `dynamic_illustration.py` script integrates storage
+pool changes from the baseline fluxes for one explicitly illustrative cycle;
+it writes the fourth figure and a CSV summary. Run `create_review_report.py`
+after both scripts to assemble the model results and four figures into
+`results/EBPR_review_report.pdf`.
 The build script serializes the default anaerobic model to
 `models/ebpr_model.json`.
 
@@ -125,13 +129,16 @@ The detailed reaction fluxes remain in `artifacts/`; publication-ready
 summaries, figure captions, and future-work notes are in `results/`.
 Figures are in `figures/figure_01_ebpr_phase_cycle.*`,
 `figures/figure_02_baseline_fluxes.*`, and
-`figures/figure_03_sensitivity_analysis.*`.
+`figures/figure_03_sensitivity_analysis.*`, plus
+`figures/figure_04_illustrative_storage_pools.*`.
 
 This is a model-only project: no wet-lab experiments or experimental
-measurements were conducted. Because the current model solves two independent
-steady states and has no biomass reaction or time integration, it does not
-produce a growth curve. Potential experimental validation is described only as
-future work in `results/future_work.md`.
+measurements were conducted. Figure 4 is a model-only storage-pool trajectory,
+not a biomass growth curve: its time and pool units are arbitrary, and the
+polyphosphate pool does not return to its initial value. It illustrates the
+current model's cycle-balance limitation; it is not dynamic FBA or a calibrated
+prediction. Potential experimental validation is described only as future work
+in `results/future_work.md`.
 
 ## Important limitations
 
@@ -141,9 +148,11 @@ future work in `results/future_work.md`.
 - The ATP yields, reserve caps, and maintenance demand are illustrative
   assumptions. No experimental data or reference stoichiometric model is used
   to calibrate the teaching model.
-- The two phases are independent steady-state optimizations. This model does
-  not predict cycle duration, intracellular pool concentrations, wastewater
-  treatment performance, or full-scale aeration/carbon dosing.
+- The two phases are independent steady-state optimizations. The separate
+  pool-trajectory script integrates their baseline fluxes under arbitrary
+  assumptions; it does not make the phase optimizations dynamically coupled or
+  predict real cycle duration, concentrations, treatment performance, or
+  full-scale aeration/carbon dosing.
 - Results are useful for demonstrating how constraints affect feasible fluxes.
   They are not validated evidence for industrial decisions.
 
@@ -160,10 +169,10 @@ only demonstrates qualitative flux tradeoffs under toy constraints.
 
 ## Future extensions
 
-These remain outside the current teaching-model scope: dynamic FBA linking
-storage pools across phases, additional carbon sources, oxygen gradients,
-gene-expression/regulatory constraints, denitrification, and calibration or
-validation against wastewater-treatment data.
+Future model extensions could couple storage-pool states to phase-specific FBA,
+then add additional carbon sources, oxygen gradients, gene-expression
+constraints, or denitrification. Wet-lab measurements and validation remain
+future steps only; none are included in this project.
 
 ## References
 

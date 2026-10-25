@@ -27,6 +27,7 @@ def read_rows(path: Path) -> list[dict[str, str]]:
 def create_report() -> Path:
     phase_rows = read_rows(RESULTS / "phase_summary.csv")
     sensitivity_rows = read_rows(RESULTS / "sensitivity_analysis.csv")
+    trajectory_rows = read_rows(RESULTS / "dynamic_pool_trajectory.csv")
     report_path = RESULTS / "EBPR_review_report.pdf"
     figure_specs = [
         (
@@ -40,6 +41,11 @@ def create_report() -> Path:
         (
             "figure_03_sensitivity_analysis.png",
             "Figure 3. One-at-a-time sensitivity of the phase objectives; infeasible boundary cases are shown.",
+        ),
+        (
+            "figure_04_illustrative_storage_pools.png",
+            "Figure 4. Illustrative storage-pool integration from baseline FBA fluxes. "
+            "The polyphosphate pool does not close over the cycle.",
         ),
     ]
 
@@ -139,10 +145,13 @@ def create_report() -> Path:
         ax.text(
             0,
             0.435,
-            "These figures show fluxes and constraint responses calculated by the "
-            "checked-in model. The sensitivity sweep is deterministic and tests model "
-            "behavior under selected bounds; it is not a fit, prediction, or estimate "
-            "of biological variability.",
+            "The first three figures show fluxes and constraint responses from the "
+            "checked-in FBA model. Figure 4 integrates those baseline storage fluxes "
+            f"over one illustrative cycle: PHA ends at {float(trajectory_rows[-1]['pha_pool']):.3g} "
+            f"pool units and polyphosphate at "
+            f"{float(trajectory_rows[-1]['polyphosphate_pool']):.4g}. Its time and "
+            "pool units are arbitrary; it exposes phase-pool imbalance rather than "
+            "predicting biology.",
             fontsize=8.7,
             color=INK,
             va="top",
@@ -163,10 +172,11 @@ def create_report() -> Path:
             0.255,
             "No wet-lab experiments or experimental measurements were conducted for "
             "this project. The FBA network is an illustrative, non-atom/charge-balanced "
-            "teaching model with arbitrary flux units; it has no biomass reaction or time "
-            "integration, so it cannot produce a growth curve. Future work could add "
-            "dynamic behavior and, if experiments are later performed, validate against "
-            "documented biomass and phosphorus measurements.",
+            "teaching model with arbitrary flux units and no biomass state. Figure 4 "
+            "is a separate piecewise pool integration—not dynamic FBA, a biomass "
+            "growth curve, or an experimental result. Future work should couple the "
+            "storage pools to the phase optimizations; experimental validation, if "
+            "later performed, remains future work.",
             fontsize=8.7,
             color=INK,
             va="top",

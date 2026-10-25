@@ -18,3 +18,7 @@ The one-at-a-time analysis contains 30 optimization runs;
 `sensitivity_analysis.csv` and `../figures/figure_03_sensitivity_analysis.png`.
 The sweep demonstrates model constraint behavior, not parameter uncertainty or
 statistical significance.
+
+The separate Figure 4 pool trajectory integrates baseline phase fluxes under
+explicit arbitrary assumptions; it is not dynamic FBA or a growth curve. See
+`dynamic_pool_summary.md` for the assumptions and the polyphosphate pool drift.

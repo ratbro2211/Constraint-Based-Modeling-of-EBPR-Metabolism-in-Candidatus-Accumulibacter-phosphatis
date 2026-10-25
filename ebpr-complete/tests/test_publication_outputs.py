@@ -23,6 +23,15 @@ class TestPublicationOutputs(unittest.TestCase):
             raise AssertionError(
                 f"Publication-output generator failed:\n{result.stderr}"
             )
+        dynamic = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "dynamic_illustration.py")],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if dynamic.returncode:
+            raise AssertionError(f"Dynamic illustration failed:\n{dynamic.stderr}")
         report = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "create_review_report.py")],
             cwd=ROOT,
@@ -52,12 +61,17 @@ class TestPublicationOutputs(unittest.TestCase):
             "figures/figure_02_baseline_fluxes.pdf",
             "figures/figure_03_sensitivity_analysis.png",
             "figures/figure_03_sensitivity_analysis.pdf",
+            "figures/figure_04_illustrative_storage_pools.png",
+            "figures/figure_04_illustrative_storage_pools.pdf",
             "results/phase_summary.csv",
             "results/sensitivity_analysis.csv",
             "results/model_results.md",
             "results/future_work.md",
             "results/figure_captions.md",
+            "results/dynamic_pool_trajectory.csv",
+            "results/dynamic_pool_summary.md",
             "results/EBPR_review_report.pdf",
+            "data/dynamic_scenario.csv",
         ]
         for relative_path in expected_paths:
             path = ROOT / relative_path
@@ -69,6 +83,24 @@ class TestPublicationOutputs(unittest.TestCase):
         )
         self.assertIn("No wet-lab experiments", future_work)
         self.assertIn("Future work", future_work)
+
+    def test_dynamic_storage_illustration_exposes_pool_imbalance(self):
+        with (ROOT / "results" / "dynamic_pool_trajectory.csv").open(
+            newline="", encoding="utf-8"
+        ) as handle:
+            rows = list(csv.DictReader(handle))
+        self.assertEqual(rows[0]["phase"], "anaerobic")
+        self.assertEqual(rows[-1]["phase"], "aerobic")
+        self.assertAlmostEqual(float(rows[0]["pha_pool"]), 0.0, places=7)
+        self.assertAlmostEqual(float(rows[-1]["pha_pool"]), 0.0, places=5)
+        self.assertAlmostEqual(float(rows[0]["polyphosphate_pool"]), 5.0, places=5)
+        self.assertGreater(float(rows[-1]["polyphosphate_pool"]), 5.0)
+
+        summary = (ROOT / "results" / "dynamic_pool_summary.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("not dynamic FBA", summary)
+        self.assertIn("do not close", summary)
 
     def test_review_report_is_a_nonempty_pdf(self):
         report = (ROOT / "results" / "EBPR_review_report.pdf").read_bytes()

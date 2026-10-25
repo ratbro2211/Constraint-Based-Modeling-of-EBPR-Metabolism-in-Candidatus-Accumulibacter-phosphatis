@@ -406,17 +406,26 @@ The one-at-a-time analysis contains {len(sensitivity_rows)} optimization runs;
 `sensitivity_analysis.csv` and `../figures/figure_03_sensitivity_analysis.png`.
 The sweep demonstrates model constraint behavior, not parameter uncertainty or
 statistical significance.
+
+The separate Figure 4 pool trajectory integrates baseline phase fluxes under
+explicit arbitrary assumptions; it is not dynamic FBA or a growth curve. See
+`dynamic_pool_summary.md` for the assumptions and the polyphosphate pool drift.
 """
     future_work = """# Future work
 
 This project currently contains model outputs only. No wet-lab experiments or
 experimental measurements were conducted for this project.
 
-The current model has no biomass reaction, biomass state variable, or time
-integration, so its steady-state fluxes cannot produce a growth curve. Future
-work could add a dynamic model and, if experimental work becomes available,
-validate it using documented biomass and phosphorus measurements with matched
-units, sampling times, and operating conditions.
+The core FBA model still solves two independent steady states and has no biomass
+state variable. `dynamic_illustration.py` integrates selected storage fluxes
+over one illustrative cycle, but it does not re-solve FBA as pools change and is
+not a calibrated dynamic model or growth curve. Its polyphosphate pool drift
+shows that the current phase optima do not close a balanced repeating cycle.
+
+Future modeling work should couple the phase constraints and storage pools
+before making cycle-level claims. If experimental work is later performed,
+validation could use documented biomass and phosphorus measurements with
+matched units, sampling times, and operating conditions.
 """
     figure_captions = """# Figure captions
 
@@ -430,6 +439,12 @@ units, sampling times, and operating conditions.
    parameter groups. Infeasible boundary cases are noted, not plotted as zero.
    No uncertainty intervals are available because these are deterministic
    teaching-model solves with arbitrary bounds.
+4. **Illustrative storage-pool trajectory.** Piecewise integration of baseline
+    PHA and polyphosphate fluxes over one anaerobic/aerobic cycle. Time and pool
+    units are arbitrary; the aerobic duration is chosen to return PHA to its
+    starting pool. Polyphosphate does not return to its initial pool, exposing
+    a cycle-balance limitation. This is not dynamic FBA, biomass growth, or an
+    experimental result.
 """
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
